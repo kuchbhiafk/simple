@@ -1,1 +1,584 @@
-# simple
+//Selection sort
+#include <stdio.h>
+
+int main() {
+    int n, a[20], i, j, min, temp;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements:\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    for(i = 0; i < n - 1; i++) {
+        min = i;
+        for(j = i + 1; j < n; j++) {
+            if(a[j] < a[min])
+                min = j;
+        }
+        temp = a[i];
+        a[i] = a[min];
+        a[min] = temp;
+    }
+
+    printf("Sorted array:\n");
+    for(i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    return 0;
+}
+
+//Topo Sort
+#include <stdio.h>
+
+#define MAX 20
+
+int main() {
+    int n, i, j, count = 0;
+    int adj[MAX][MAX], indegree[MAX] = {0}, topo[MAX];
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            scanf("%d", &adj[i][j]);
+        }
+    }
+
+    // Calculate indegree
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            if(adj[j][i] == 1)
+                indegree[i]++;
+        }
+    }
+
+    // Generate topological order
+    while(count < n) {
+        for(i = 0; i < n; i++) {
+            if(indegree[i] == 0) {
+                topo[count++] = i;
+                indegree[i] = -1; // mark visited
+
+                for(j = 0; j < n; j++) {
+                    if(adj[i][j] == 1)
+                        indegree[j]--;
+                }
+                break;
+            }
+        }
+    }
+
+    printf("Topological order:\n");
+    for(i = 0; i < n; i++)
+        printf("%d ", topo[i]);
+
+    return 0;
+}
+
+//Merge Sort
+#include <stdio.h>
+
+void merge(int a[], int l, int m, int r) {
+    int i = l, j = m + 1, k = 0, temp[50];
+
+    while(i <= m && j <= r) {
+        if(a[i] < a[j])
+            temp[k++] = a[i++];
+        else
+            temp[k++] = a[j++];
+    }
+
+    while(i <= m) temp[k++] = a[i++];
+    while(j <= r) temp[k++] = a[j++];
+
+    for(i = l, k = 0; i <= r; i++, k++)
+        a[i] = temp[k];
+}
+
+void mergeSort(int a[], int l, int r) {
+    if(l < r) {
+        int m = (l + r) / 2;
+        mergeSort(a, l, m);
+        mergeSort(a, m + 1, r);
+        merge(a, l, m, r);
+    }
+}
+
+int main() {
+    int n, a[50], i;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements:\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    mergeSort(a, 0, n - 1);
+
+    printf("Sorted array:\n");
+    for(i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    return 0;
+}
+
+//Quick Sort
+#include <stdio.h>
+
+void swap(int *a, int *b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+int partition(int a[], int low, int high) {
+    int pivot = a[high];
+    int i = low;
+
+    for(int j = low; j < high; j++) {
+        if(a[j] < pivot) {
+            swap(&a[i], &a[j]);
+            i++;
+        }
+    }
+    swap(&a[i], &a[high]);
+    return i;
+}
+
+void quickSort(int a[], int low, int high) {
+    if(low < high) {
+        int pi = partition(a, low, high);
+        quickSort(a, low, pi - 1);
+        quickSort(a, pi + 1, high);
+    }
+}
+
+int main() {
+    int n, a[50], i;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter elements:\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    quickSort(a, 0, n - 1);
+
+    printf("Sorted array:\n");
+    for(i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    return 0;
+}
+
+//Floyd
+#include <stdio.h>
+
+#define INF 999
+
+int main() {
+    int n, i, j, k;
+    int cost[10][10];
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter cost matrix:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            scanf("%d", &cost[i][j]);
+            if(i != j && cost[i][j] == 0)
+                cost[i][j] = INF;
+        }
+    }
+
+    // Floyd Algorithm
+    for(k = 0; k < n; k++) {
+        for(i = 0; i < n; i++) {
+            for(j = 0; j < n; j++) {
+                if(cost[i][k] + cost[k][j] < cost[i][j])
+                    cost[i][j] = cost[i][k] + cost[k][j];
+            }
+        }
+    }
+
+    printf("\nShortest path matrix:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            printf("%d ", cost[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+
+//Warshall
+#include <stdio.h>
+
+int main() {
+    int n, i, j, k;
+    int a[10][10];
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            scanf("%d", &a[i][j]);
+        }
+    }
+
+    // Warshall Algorithm
+    for(k = 0; k < n; k++) {
+        for(i = 0; i < n; i++) {
+            for(j = 0; j < n; j++) {
+                a[i][j] = a[i][j] || (a[i][k] && a[k][j]);
+            }
+        }
+    }
+
+    printf("\nTransitive closure:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            printf("%d ", a[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+
+//Knapsack
+#include <stdio.h>
+
+int n, cap, p[20], w[20], v[20][50], x[20];
+
+int max(int a, int b) { return (a > b) ? a : b; }
+
+int knap(int i, int j) {
+    if (i == 0 || j == 0) return 0;
+
+    if (v[i][j] != -1) return v[i][j];
+
+    if (j < w[i])
+        return v[i][j] = knap(i-1, j);
+
+    return v[i][j] = max(knap(i-1, j),
+                         p[i] + knap(i-1, j - w[i]));
+}
+
+int main() {
+    int i, j, profit = 0;
+
+    printf("Enter number of items: ");
+    scanf("%d", &n);
+
+    for (i = 1; i <= n; i++) {
+        printf("Item %d (profit weight): ", i);
+        scanf("%d %d", &p[i], &w[i]);
+    }
+
+    printf("Enter capacity: ");
+    scanf("%d", &cap);
+
+    // Initialize DP table
+    for (i = 0; i <= n; i++)
+        for (j = 0; j <= cap; j++)
+            v[i][j] = -1;
+
+    profit = knap(n, cap);
+
+    // Backtracking
+    i = n; j = cap;
+    while (i > 0 && j > 0) {
+        if (v[i][j] != v[i-1][j]) {
+            x[i] = 1;
+            j -= w[i];
+        }
+        i--;
+    }
+
+    printf("\nSelected items:\n");
+    for (i = 1; i <= n; i++)
+        if (x[i])
+            printf("Item %d (w=%d, p=%d)\n", i, w[i], p[i]);
+
+    printf("Total profit = %d\n", profit);
+
+    return 0;
+}
+
+//Prims
+#include <stdio.h>
+
+#define INF 999
+
+int main() {
+    int n, i, j, min, mincost = 0;
+    int a, b, ne = 1;
+    int visited[10] = {0};
+    int cost[10][10];
+
+    printf("Enter the number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter the adjacency matrix:\n");
+    for (i = 1; i <= n; i++) {
+        for (j = 1; j <= n; j++) {
+            scanf("%d", &cost[i][j]);
+            if (i != j && cost[i][j] == 0)
+                cost[i][j] = INF;
+        }
+    }
+
+    visited[1] = 1;
+
+    while (ne < n) {
+        min = INF;
+
+        for (i = 1; i <= n; i++) {
+            if (visited[i]) {
+                for (j = 1; j <= n; j++) {
+                    if (!visited[j] && cost[i][j] < min) {
+                        min = cost[i][j];
+                        a = i;
+                        b = j;
+                    }
+                }
+            }
+        }
+
+        printf("Edge %d: (%d %d) cost:%d\n", ne++, a, b, min);
+        mincost += min;
+        visited[b] = 1;
+
+        cost[a][b] = cost[b][a] = INF;
+    }
+
+    printf("Minimum cost = %d\n", mincost);
+
+    return 0;
+}
+
+//Krushkal
+#include <stdio.h>
+
+int parent[10];
+
+int find(int i) {
+    while (parent[i])
+        i = parent[i];
+    return i;
+}
+
+int uni(int i, int j) {
+    if (i != j) {
+        parent[j] = i;
+        return 1;
+    }
+    return 0;
+}
+
+int main() {
+    int n, i, j, a, b, u, v;
+    int cost[10][10], min, mincost = 0, k = 1;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter cost matrix:\n");
+    for (i = 1; i <= n; i++) {
+        for (j = 1; j <= n; j++) {
+            scanf("%d", &cost[i][j]);
+            if (cost[i][j] == 0)
+                cost[i][j] = 999;
+        }
+    }
+
+    printf("\nEdges in MST:\n");
+
+    while (k < n) {
+        min = 999;
+
+        for (i = 1; i <= n; i++) {
+            for (j = 1; j <= n; j++) {
+                if (cost[i][j] < min) {
+                    min = cost[i][j];
+                    a = u = i;
+                    b = v = j;
+                }
+            }
+        }
+
+        u = find(u);
+        v = find(v);
+
+        if (uni(u, v)) {
+            printf("Edge %d: (%d %d) cost=%d\n", k++, a, b, min);
+            mincost += min;
+        }
+
+        cost[a][b] = cost[b][a] = 999;
+    }
+
+    printf("Minimum cost = %d\n", mincost);
+
+    return 0;
+}
+
+//Djikstra
+#include <stdio.h>
+
+#define INF 999
+
+int main()
+{
+    int n;
+    int cost[10][10];
+    int dist[10];
+    int visited[10] = {0};
+
+    int i, j, u, v, min;
+    int source;
+
+    printf("Enter the number of nodes: ");
+    scanf("%d", &n);
+
+    printf("\nEnter the cost matrix:\n");
+
+    // Read matrix and replace 0s with INF (no edge) for non-diagonal
+    for (i = 1; i <= n; i++)
+    {
+        for (j = 1; j <= n; j++)
+        {
+            scanf("%d", &cost[i][j]);
+
+            if (cost[i][j] == 0 && i != j) // No edge from i to j
+            {
+                cost[i][j] = INF;
+            }
+        }
+    }
+
+    printf("\nEnter the source matrix: ");
+    scanf("%d", &source);
+
+    // Initialize distances from source
+    for (i = 1; i <= n; i++)
+    {
+        dist[i] = cost[source][i]; // Set initial distances
+    }
+
+    visited[source] = 1;    // Mark source as visited
+    dist[source] = 0;       // Distance to source is 0
+
+    // Dijkstra Algorithm: Find shortest path from source to all vertices
+    for (i = 1; i < n; i++)
+    {
+        min = INF;
+
+        // Find unvisited vertex with minimum distance
+        for (j = 1; j <= n; j++)
+        {
+            if (visited[j] == 0 && dist[j] < min)
+            {
+                min = dist[j];
+                u = j;
+            }
+        }
+
+        visited[u] = 1; // Mark as visited
+
+        // Update distances of adjacent unvisited vertices
+        for (v = 1; v <= n; v++)
+        {
+            if (visited[v] == 0)
+            {
+                // If path through u is shorter, update distance
+                if (dist[v] > dist[u] + cost[u][v])
+                {
+                    dist[v] = dist[u] + cost[u][v];
+                }
+            }
+        }
+    }
+
+    printf("\nShortest path:\n");
+
+    for (i = 1; i <= n; i++)
+    {
+        if (i != source)
+        {
+            printf("%d->%d,cost=%d\n", source, i, dist[i]);
+        }
+    }
+
+    return 0;
+}
+
+//N-Queens
+#include <stdio.h>
+#include <stdlib.h>
+
+int board[20], count = 0;
+
+// Check if position is safe
+int isSafe(int row, int col) {
+    for (int i = 0; i < row; i++) {
+        if (board[i] == col || abs(board[i] - col) == abs(i - row))
+            return 0;
+    }
+    return 1;
+}
+
+// Print solution
+void printSolution(int n) {
+    count++;
+    printf("\nSolution %d:\n", count);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (board[i] == j)
+                printf("Q ");
+            else
+                printf(". ");
+        }
+        printf("\n");
+    }
+}
+
+// Backtracking function
+void solve(int row, int n) {
+    if (row == n) {
+        printSolution(n);
+        return;
+    }
+
+    for (int col = 0; col < n; col++) {
+        if (isSafe(row, col)) {
+            board[row] = col;
+            solve(row + 1, n);
+        }
+    }
+}
+
+int main() {
+    int n;
+
+    printf("Enter number of queens: ");
+    scanf("%d", &n);
+
+    solve(0, n);
+
+    printf("\nTotal solutions = %d\n", count);
+
+    return 0;
+}
